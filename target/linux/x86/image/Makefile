@@ -125,6 +125,10 @@ ifneq ($(CONFIG_VDI_IMAGES),)
 	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vdi \
 		$(BIN_DIR)/$(IMG_COMBINED)-$(1).img \
 		$(BIN_DIR)/$(IMG_COMBINED)-$(1).vdi
+	test -z $(CONFIG_VDI_IMAGES_VIRTUAL_SIZE) || \
+		$(STAGING_DIR_HOST)/bin/qemu-img resize \
+			$(BIN_DIR)/$(IMG_COMBINED)-$(1).vdi \
+			$(CONFIG_VDI_IMAGES_VIRTUAL_SIZE)
   endef
 endif
 
@@ -134,6 +138,10 @@ ifneq ($(CONFIG_VMDK_IMAGES),)
 	$(STAGING_DIR_HOST)/bin/qemu-img convert -f raw -O vmdk \
 		$(BIN_DIR)/$(IMG_COMBINED)-$(1).img \
 		$(BIN_DIR)/$(IMG_COMBINED)-$(1).vmdk
+	test -z $(CONFIG_VMDK_IMAGES_VIRTUAL_SIZE) || \
+		$(STAGING_DIR_HOST)/bin/qemu-img resize \
+			$(BIN_DIR)/$(IMG_COMBINED)-$(1).vmdk \
+			$(CONFIG_VMDK_IMAGES_VIRTUAL_SIZE)
   endef
 endif
 
