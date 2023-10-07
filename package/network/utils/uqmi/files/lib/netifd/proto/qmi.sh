@@ -27,6 +27,9 @@ proto_qmi_init_config() {
 	proto_config_add_int plmn
 	proto_config_add_int timeout
 	proto_config_add_int mtu
+	proto_config_add_boolean watchdog_enabled
+	proto_config_add_int watchdog_interval
+	proto_config_add_int watchdog_timeout
 	proto_config_add_defaults
 }
 
@@ -39,10 +42,12 @@ proto_qmi_setup() {
 	local cid_4 pdh_4 cid_6 pdh_6
 	local ip_6 ip_prefix_length gateway_6 dns1_6 dns2_6
 	local profile_pdptype
+	local watchdog_enabled watchdog_interval watchdog_timeout
 
 	json_get_vars device apn v6apn auth username password pincode delay modes
 	json_get_vars pdptype profile v6profile dhcp dhcpv6 autoconnect plmn ip4table
-	json_get_vars ip6table timeout mtu $PROTO_DEFAULT_OPTIONS
+	json_get_vars ip6table timeout mtu
+	json_get_vars watchdog_enabled watchdog_interval watchdog_timeout $PROTO_DEFAULT_OPTIONS
 
 	[ "$timeout" = "" ] && timeout="10"
 
@@ -484,6 +489,22 @@ proto_qmi_setup() {
 			ubus call network add_dynamic "$(json_dump)"
 		fi
 	}
+
+	local cid_list
+	if [ -n "$cid_4" -a -n "$cid_6" ]; then
+		cid_list="$cid_4,$cid_6"
+	elif [ -n "$cid_4" ]; then
+		cid_list="$cid_4"
+	elif [ -n "$cid_6" ]; then
+		cid_list="$cid_6"
+	fi
+
+	if [ -z "$watchdog_enabled" -o "$watchdog_enabled" != "0" ]; then
+		[ -z "$watchdog_interval" ] && watchdog_interval="60"
+		[ -z "$watchdog_timeout" ] && watchdog_timeout="5"
+		proto_run_command "$interface" /lib/uqmi/qmi-watchdog.sh "$device" "$watchdog_interval" \
+			"$watchdog_timeout" "$cid_list"
+	fi
 }
 
 qmi_wds_stop() {

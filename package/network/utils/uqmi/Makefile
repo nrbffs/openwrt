@@ -41,9 +41,10 @@ CMAKE_OPTIONS += \
 	-DDEBUG=1
 
 define Package/uqmi/install
-	$(INSTALL_DIR) $(1)/sbin
+	$(INSTALL_DIR) $(1)/sbin $(1)/lib/uqmi $(1)/lib/netifd/proto
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uqmi $(1)/sbin/
-	$(CP) ./files/* $(1)/
+	$(INSTALL_BIN) ./files/lib/uqmi/qmi-watchdog.sh $(1)/lib/uqmi/qmi-watchdog.sh
+	$(CP) ./files/lib/netifd/proto/qmi.sh $(1)/lib/netifd/proto/qmi.sh
 endef
 
 $(eval $(call BuildPackage,uqmi))
