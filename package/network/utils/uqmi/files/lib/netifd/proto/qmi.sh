@@ -499,7 +499,7 @@ proto_qmi_setup() {
 		cid_list="$cid_6"
 	fi
 
-	if [ -z "$watchdog_enabled" -o "$watchdog_enabled" != "0" ]; then
+	if [ -n "$watchdog_enabled" -a "$watchdog_enabled" != "0" ]; then
 		[ -z "$watchdog_interval" ] && watchdog_interval="60"
 		[ -z "$watchdog_timeout" ] && watchdog_timeout="5"
 		proto_run_command "$interface" /lib/uqmi/qmi-watchdog.sh "$device" "$watchdog_interval" \
