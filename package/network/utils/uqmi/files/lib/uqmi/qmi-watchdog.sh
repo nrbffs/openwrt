@@ -34,7 +34,7 @@ while true; do
 				# This does not recover. We don't have to wait out the timeout.
 				echo "SIM card in illegal state - restart interface now"
 				return 1
-			if [ -z "$card_application_state" ]; then
+			elif [ -z "$card_application_state" ]; then
 				# No SIM Status. Either the next request succeeds or the SIM card
 				# potentially needs to be power-cycled
 				echo "Empty SIM card application status"
